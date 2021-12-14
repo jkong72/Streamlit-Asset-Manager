@@ -13,12 +13,8 @@ import seaborn as sb
 
 
 def main() :
-    # df = pd.read_excel('data/입출고 관리.xlsx',
-    # header=0,
-    # usecols='A, B, C, D, E')
-    # df.replace("", np.nan, inplace=True)
-    # df = df.fillna(method='pad')
-
+    
+    # 날짜 형변환
     df = pd.read_csv('data/입출고 관리 - 작성.csv')
     df = df.fillna(method='pad')
     df['날짜'] = df['날짜'].astype('str')
@@ -32,13 +28,14 @@ def main() :
     df['매출'] = df['거래량'] * df['단가']
 
     
-    # 날짜를 나눈 월 데이터프레임
+    # 날짜를 연/월별로 나눈 데이터프레임
     df_month = df.copy()
     df_month['년'] = df_month['날짜'].dt.year
     df_month['월'] = df_month['날짜'].dt.month
     df_month.drop(columns = '날짜', inplace=True)
     df_month = df_month[['년', '월', '거래처', '품목', '거래량', '단가', '매출']]
 
+    # 월별 매입/매출 데이터프레임
     df_buy = df.loc[df['거래처']=='매입',]
     df_sell = df.loc[df['거래처']!='매입',]
     df_buy_month = df_month.loc[df['거래처']=='매입',]
