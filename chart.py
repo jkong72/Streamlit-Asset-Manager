@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib as plt
 import seaborn as sns
 import plotly.express as px
+from datetime import datetime
 ##################################################
 
 def chart_app(df_set, total_income) :
@@ -10,8 +11,8 @@ def chart_app(df_set, total_income) :
     menu = ['월별 매출', '기간별 성적', '점유율']
     ms = st.sidebar.selectbox('차트', menu)
 
-    st.dataframe(df_set)
-    st.dataframe(total_income)
+    # st.dataframe(df_set)
+    # st.dataframe(total_income)
 
     # menu 월별 매출
     if ms == menu[0]:
@@ -52,10 +53,15 @@ def chart_app(df_set, total_income) :
         if len(col_set) != 0:
             df_set = df_set.set_index(index_set).loc[col_set]
             df_set.reset_index(inplace=True)
+            # df_set = df_set.groupby('거래처')['매출']
+            # df_set['날짜'] = pd.to_datetime(df_set['날짜'])
+            # df_set = df_set.groupby(df_set['날짜'].dt.strftime('%B'))[val_set].sum()
+
             st.dataframe(df_set)
 
-        fig2 = px.line(df_set, x='날짜', y=val_set)
-        st.plotly_chart(fig2)
+            
+            fig2 = px.line(df_set, x='날짜', y=val_set, color=index_set)
+            st.plotly_chart(fig2)
         
         pass
 
