@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sb
 from datetime import datetime
 
+from chart import chart_app
+
 #################################################################
 # df = 전체 데이터 프레임
 # df_month = 날짜를 연/월로 나눠놓은 데이터프레임
@@ -19,10 +21,10 @@ st.set_page_config(
     layout='wide',
     initial_sidebar_state='expanded'
 )
-
-
+##########################################
+# 주요 코드################################
 def main() :
-    # 파일 입력
+    # 파일 입력 및 기본 가공
     df = pd.read_csv('data/입출고 관리 - 작성.csv')
     df = df.fillna(method='pad')    # 현재 데이터는 기록이 자동화되어있지 않으므로
                                     # 기록 시간을 줄이기 위해 같은 데이터는 등장시에만
@@ -35,15 +37,12 @@ def main() :
     df['날짜'] = df['날짜'].astype('str')
     df['날짜'] = df['날짜'].str.rstrip('.0') 
     df['날짜'] = df['날짜'].str[0:4] +'-'+ df['날짜'].str[4:6] +'-'+ df['날짜'].str[6:8]
-
-    
+   
     # # 전체 데이터프레임 가공
     df['날짜'] = pd.to_datetime(df['날짜'])#.dt.date
     df['단가'] = df['단가'].astype('int')
     df['거래량'] = abs (df['거래량'].astype('int'))
     df['매출'] = df['거래량'] * df['단가']
-
-
 
     # 날짜를 연/월별로 나눈 데이터프레임
     df_month = df.copy()
@@ -76,71 +75,70 @@ def main() :
     total_income['년월'] = total_income['년'].astype(str) +'-'+ total_income['월'].astype(str)
     total_income.set_index('년월', inplace=True)
     total_income.drop(columns=['년', '월'],inplace=True)
-
+##########################################################################################
+##########################################################################################
 
     # 스트림릿 레이아웃
+    st.title ('관리')
+    st.subheader ('범위 설정')
     menu = ['전표', '차트']
     menu_choice = st.sidebar.selectbox('메뉴', menu)
 
-#temp corner ########################################
-
-    st.dataframe(df)   
+    # 날짜 설정
+    datecol1, datecol2 = st.columns(2)
+    with datecol1:
+        start_date = st.date_input('부터', min(df['날짜'])) # 최초 기입일
+        
+    with datecol2:            
+        end_date = st.date_input('까지', datetime.now())
     
+    # btncol1, btncol2 = st.columns(2)
+
+    # with btncol1:
+    #     if st.button('재설정', help='최초 기입일로 설정합니다.'):            
+    #         start_date = min(df['날짜'])
+    # with btncol2:
+    #     if st.button('오늘로'):
+    #         end_date = datetime.now().date()
+
+    # 목록 변수 설정
+    accounts = sorted(df['거래처'].unique())
+    items = sorted(df['품목'].unique())
+
+    optioncol1, optioncol2 = st.columns(2)
+    with optioncol1:
+        accounts_ms = st.multiselect ('거래처 선택', accounts)
+    with optioncol2:
+        items_ms = st.multiselect ('품목 선택', items)
+
+    # 데이터 프레임 최종 가공
+    df_acc=df.set_index('거래처')
+    df_items=df.set_index('품목')
+
+    if len(accounts_ms) != 0:
+        df_acc = df_acc.loc[accounts_ms,]
+    if len (items_ms) != 0:
+        df_items = df_items.loc[items_ms,]
+
+    df_acc.reset_index(inplace=True)
+    df_items.reset_index(inplace=True)
+
+    columns_list = list(df_acc.columns)
+    df_set = pd.merge(df_acc, df_items, how='inner', on=columns_list)
+    df_set = df_set.loc[(df_set['날짜'] >= start_date) & (df_set['날짜'] <= end_date)]
+    df_set.sort_values('날짜', inplace=True)
+##################################################################
+##################################################################
 
     # menu 전표
     if menu_choice == menu[0]:
-        datecol1, datecol2 = st.columns(2)
-        with datecol1:
-            start_date = st.date_input('부터', min(df['날짜'])) # 최초 기입일
-        with datecol2:            
-            end_date = st.date_input('까지', datetime.now())
+        st.subheader ('전표')
+        df_set.set_index('날짜', inplace=True)
+        st.dataframe(df_set)
 
-        # 목록 변수 설정
-        accounts = df['거래처'].unique()
-        items = df['품목'].unique()
-
-        optioncol1, optioncol2 = st.columns(2)
-        with optioncol1:
-            accounts_ms = st.multiselect ('거래처 선택', accounts)
-        with optioncol2:
-            items_ms = st.multiselect ('품목 선택', items)
-
-        # 날짜 검색 결과
-        # datedf = df.loc[df['날짜']==start_date:df['날짜']==end_date,:]
-        # st.dataframe(datedf)
-
-        # 옵션 검색 결과
-        search_range = ['넓히기(모두)', '좁히기(일치)']
-        search_set = st.sidebar.radio('검색 설정', search_range)
-        if search_set == search_range[0]:
-            df_selected_ms = df.loc[(df['거래처']=='중앙')|(df['품목']=='102'),:] 
-            # for는 스텝이 너무 많아지므로 고려하지 않음.
-            # set_index를 통해 데이터를 구한후, reset index -> merge가 나을지...
-            
-            df_date=df.set_index('날짜')
-            df_acc=df.set_index('거래처')
-            df_items=df.set_index('품목')
-
-            print(type(str(start_date)))
-
-            # df_date = df_date.loc[start_date:,:]
-
-            df_acc = df_acc.loc[accounts_ms,]
-            st.dataframe(df_acc)
-
-            df_items = df_items.loc[items_ms,]
-
-        
-            
-
-        # elif search_set == search_range[1]:
-            # df_selected_ms = df.loc[(df['거래처']=='중앙')&(df['품목']=='102'),:] 
-        
-
-
-
+    # menu 차트
     elif menu_choice == menu[1]:
-        pass
+        chart_app(df_set, total_income)
 
 
 
