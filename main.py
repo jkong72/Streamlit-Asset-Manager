@@ -131,6 +131,7 @@ def main() :
 
     # menu 전표
     if menu_choice == menu[0]:
+        # 정렬 기능 넣고, dataframe 파일에서 함수로 처리.
         st.subheader ('전표')
         df_set.set_index('날짜', inplace=True)
         st.dataframe(df_set)
