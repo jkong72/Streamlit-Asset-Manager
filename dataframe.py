@@ -26,7 +26,7 @@ def df_app(df_set):
     col_sel = st.sidebar.selectbox('어디서 (항목)', col)
 
 
-    num_sel = st.sidebar.number_input('얼만큼 (개수)', min_value=0, value=5, max_value=df_set.shape[0]), # max_val을 수정해야 함.
+    num_sel = st.sidebar.number_input('얼만큼 (개수)', min_value=0, value=5), # max_val을 수정해야 함.
     print(num_sel[0])
 
     # st.subheader (f'{val_sel} {dich} {num_sel[0]}개 {col_sel}에 대한 데이터')
