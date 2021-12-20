@@ -41,9 +41,14 @@ def main() :
    
     # # 전체 데이터프레임 가공
     df['날짜'] = pd.to_datetime(df['날짜'])#.dt.date
+    df['품목'] = df['품목'].astype(str)
     df['단가'] = df['단가'].astype('int')
     df['거래량'] = abs (df['거래량'].astype('int'))
     df['매출'] = df['거래량'] * df['단가']
+    
+    list = [1,2,3]
+    np.array (list)
+    # 리스트가 중첩된만큼 다차원 배열이 형성된다.
 
     # 날짜를 연/월별로 나눈 데이터프레임
     # df_month = df.copy()
