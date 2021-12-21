@@ -46,8 +46,6 @@ def main() :
     df['거래량'] = abs (df['거래량'].astype('int'))
     df['매출'] = df['거래량'] * df['단가']
     
-    list = [1,2,3]
-    np.array (list)
     # 리스트가 중첩된만큼 다차원 배열이 형성된다.
 
     # 날짜를 연/월별로 나눈 데이터프레임
@@ -114,7 +112,7 @@ def main() :
     #     if st.button('오늘로'):
     #         end_date = datetime.now().date()
 
-    # 목록 변수 설정
+    # 스트림릿 목록 변수 설정
     accounts = sorted(df['거래처'].unique())
     items = sorted(df['품목'].unique())
 
@@ -136,7 +134,7 @@ def main() :
     df_acc.reset_index(inplace=True)
     df_items.reset_index(inplace=True)
 
-    columns_list = list(df_acc.columns)
+    columns_list = list (df_acc.columns)
     df_set = pd.merge(df_acc, df_items, how='inner', on=columns_list)
     df_set = df_set.loc[(df_set['날짜'] >= start_date) & (df_set['날짜'] <= end_date)]
     df_set.sort_values('날짜', inplace=True)
