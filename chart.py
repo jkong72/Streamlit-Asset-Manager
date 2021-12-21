@@ -59,7 +59,7 @@ def chart_app(df_set, df_total) :
         if df_sell['연월'].shape[0] == 0:
             df_sell['연월'] = df_buy['연월']
         
-
+        # 매입매출 merge
         df_all = df_buy.merge(df_sell, how='outer', on='연월')
         df_all.columns = ['연월', '매입', '매출']
         df_all = df_all.fillna(0)
@@ -67,8 +67,12 @@ def chart_app(df_set, df_total) :
 
         df_all['순이익'] = df_all['매출'] - df_all['매입']
 
-        print (df_all.columns[1:])
-        fig1 = px.line(df_all, x='연월', y=df_all.columns[1:])
+        # 그래프 순서를 위해 정렬
+        df_all['월간'] = pd.to_datetime(df_all['연월'])
+        df_all.sort_values('월간', inplace=True)
+        st.dataframe(df_all)
+        fig1 = px.line(df_all, x='월간', y=df_all.columns[1:])
+        
         st.plotly_chart(fig1)
 
 
@@ -108,8 +112,7 @@ def chart_app(df_set, df_total) :
             # 차트 그리기
             fig2 = px.line(df_set, x='날짜', y=val_set, color=index_set)
             st.plotly_chart(fig2)
-        
-        pass
+
 
     # menu 점유율(pie)
     elif ms == menu[2]:
@@ -119,21 +122,3 @@ def chart_app(df_set, df_total) :
         fig3 = px.pie(df_set, names = index_set, values = val_set)
         fig3.update_traces(textposition='inside', textinfo='percent+label')
         st.plotly_chart(fig3)
-        pass
-
-
-
-
-    pass
-
-# 무슨 차트를 표현해야 하나??
-
-# 0. 전체 매출과 이익을 월별로 그리는 그래프
-
-# 1. 기간을 x축, 수치를 y축으로 하는 거래처or품목 그래프
-# 기간은 월별로 하며 수치는 매출과 거래량을 사용한다. (라디오)
-# 항목의 종류도 라디오로 선택 (라디오)
-# 이 그래프는 기본적으로 가장 성적이 좋은 상위 3개와, 하위 3개를 뿌려주며
-# 이용자가 원하는 항목만 볼 수도 있다 (멀티셀렉트)
-
-# 2. 기간 매입
