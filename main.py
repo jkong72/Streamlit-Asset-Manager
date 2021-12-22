@@ -83,7 +83,7 @@ def main() :
 ##########################################################################################
 
     # 스트림릿 레이아웃
-    st.title ('관리')
+    st.title ('재고 및 재무관리 도우미')
     st.subheader ('범위 설정')
     st.write ('전체 데이터 범위를 설정합니다.')
     menu = ['전표', '차트']
@@ -149,7 +149,6 @@ def main() :
 
     
     # df_set['연월'] = str(df_set['날짜'].dt.year), str(df_set['날짜'].dt.month)
-    
     # df_set['날짜'] = pd.to_datetime(df_set['날짜'])
     # # st.dataframe(df_set)
     
