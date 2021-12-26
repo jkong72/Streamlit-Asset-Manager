@@ -41,15 +41,18 @@ def df_app(df_set, start_date, end_date):
     # 실제 표시
     df1, df2 = st.columns(2)
     with df1:
-        st.subheader (f'{start_date} 부터 {end_date} 간의')
-        st.markdown ('### 총 매출')
+        s_date = start_date.strftime('%Y년 %m월 %d일')
+        e_date = end_date.strftime('%Y년 %m월 %d일')
+        # st.subheader (f'{s_date}부터   {e_date}까지')
+        st.markdown (f'### **{s_date}**부터&nbsp;&nbsp; **{e_date}**까지의')
+        st.markdown ('#### 총 매출')
         total_sales = format (df_set['매출'].sum(), ',d')
         st.markdown (f'#### {total_sales} ₩')
         
         st.markdown("""---""")
-        st.markdown ('### 거래량')
+        st.markdown ('#### 거래량')
         total_trade = format (df_set['거래량'].sum(), ',d')
-        st.markdown (f'#### {total_trade} ₩')
+        st.markdown (f'#### {total_trade} 개')
         
     with df2:
         st.subheader (f'{val_sel} {dich} {num_sel[0]}개 {col_sel}에 대한 데이터')
