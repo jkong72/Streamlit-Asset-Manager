@@ -166,7 +166,7 @@ def main() :
 
     # menu 차트
     elif menu_choice == menu[1]:
-        chart_app(df_set, df_total )
+        chart_app(df_set, df_total)
 
 
 
