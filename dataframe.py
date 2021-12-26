@@ -4,7 +4,7 @@ import pandas as pd
 
 
 # 전체 데이터
-def df_app(df_set):
+def df_app(df_set, start_date, end_date):
     
     # st.subheader ('전표')
     df_set.set_index('날짜', inplace=True)
@@ -41,10 +41,25 @@ def df_app(df_set):
     # 실제 표시
     df1, df2 = st.columns(2)
     with df1:
-        st.subheader ('전체 전표')
-        st.dataframe(df_set, 650)
+        st.subheader (f'{start_date} 부터 {end_date} 간의')
+        st.markdown ('### 총 매출')
+        total_sales = format (df_set['매출'].sum(), ',d')
+        st.markdown (f'#### {total_sales} ₩')
+        
+        st.markdown("""---""")
+        st.markdown ('### 거래량')
+        total_trade = format (df_set['거래량'].sum(), ',d')
+        st.markdown (f'#### {total_trade} ₩')
+        
     with df2:
         st.subheader (f'{val_sel} {dich} {num_sel[0]}개 {col_sel}에 대한 데이터')
-        st.dataframe(df_set.groupby(col_sel).sum().sort_values(val_sel, ascending=con).head(num_sel[0]))
+        df_summary = df_set.groupby(col_sel).sum().sort_values(val_sel, ascending=con).head(num_sel[0])
+        df_summary['단가'] = df_summary.단가.apply(lambda x: "{:,}".format(x))+' ₩'
+        df_summary['매출'] = df_summary.매출.apply(lambda x: "{:,}".format(x))+' ₩'
+        st.dataframe(df_summary)
 
-        
+    st.markdown("""---""")
+    st.subheader ('전체 전표')
+    df_set['단가'] = df_set.단가.apply(lambda x: "{:,}".format(x))+' ₩'
+    df_set['매출'] = df_set.매출.apply(lambda x: "{:,}".format(x))+' ₩'
+    st.dataframe(df_set, width=650)

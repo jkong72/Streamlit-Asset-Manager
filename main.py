@@ -85,9 +85,10 @@ def main() :
     # 스트림릿 레이아웃
     st.title ('재고 및 재무관리 도우미')
     st.subheader ('범위 설정')
-    st.write ('전체 데이터 범위를 설정합니다.')
+    st.write ('기간이나 거래처, 품목별로 범위를 좁힐 수 있습니다.')
+    st.sidebar.markdown('## 메뉴')
     menu = ['전표', '차트']
-    menu_choice = st.sidebar.selectbox('메뉴', menu)
+    menu_choice = st.sidebar.selectbox('', menu)
     trade = ['매출', '매입']
     trade_sel = st.sidebar.radio('유형', trade)
     # 조건문은 데이터 가공이 끝난 후에 작성
@@ -161,7 +162,7 @@ def main() :
 
     # menu 전표
     if menu_choice == menu[0]:
-        df_app(df_set)
+        df_app(df_set, start_date, end_date)
 
     # menu 차트
     elif menu_choice == menu[1]:

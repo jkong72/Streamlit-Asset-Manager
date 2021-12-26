@@ -11,6 +11,7 @@ def chart_app(df_set, df_total) :
     ms = st.sidebar.selectbox('차트', menu)
 
     st.subheader ('차트 옵션')
+    st.write ('범위를 설정하지 않았다면 데이터 전체를 가져옵니다.')
     st.write ('만약 원하는 옵션이 없다면 전체 범위를 확인해 보시기 바랍니다.')
     columns_kind = ['거래처', '품목']
     values_kind = ['매출', '거래량']
@@ -36,6 +37,8 @@ def chart_app(df_set, df_total) :
     # menu 월별 매출
     if ms == menu[0]:
 
+        st.subheader ('월별 매출')
+        st.write ('날개 메뉴에서 차트의 기준을 선택할 수 있습니다.')
         # 연월 처리
         df_total['날짜'] = pd.to_datetime(df_total['날짜'])
         df_total['연월'] = df_total['날짜'].dt.strftime('%Y''-''%m')
@@ -70,7 +73,6 @@ def chart_app(df_set, df_total) :
         # 그래프 순서를 위해 정렬
         df_all['월간'] = pd.to_datetime(df_all['연월'])
         df_all.sort_values('월간', inplace=True)
-        st.dataframe(df_all)
         fig1 = px.line(df_all, x='월간', y=df_all.columns[1:])
         
         st.plotly_chart(fig1)
@@ -101,6 +103,8 @@ def chart_app(df_set, df_total) :
         # col_set에는 선택한 값들이 리스트의 형태로 들어가 있다.
         # 이 값들에 해당하는 데이터만 가지고 오도록 df를 가공해야 한다.
         
+        st.subheader ('기간별 성적')
+        st.write ('날개 메뉴에서 유형, 항목, 기준을 설정할 수 있습니다.')
         if len(col_set) != 0:
             df_set = df_set.set_index(index_set).loc[col_set]
             df_set.reset_index(inplace=True)
@@ -116,9 +120,16 @@ def chart_app(df_set, df_total) :
 
     # menu 점유율(pie)
     elif ms == menu[2]:
+        st.subheader('점유율 차트')
+
         df_set = df_set.groupby(index_set)[val_set].sum()
         df_set = df_set.reset_index()
-        # st.dataframe(df_set)
+
+        if len(col_set) != 0:
+            df_set = df_set.set_index(index_set)
+            df_set = df_set.loc[col_set,]
+            df_set.reset_index(inplace=True)
+
         fig3 = px.pie(df_set, names = index_set, values = val_set)
         fig3.update_traces(textposition='inside', textinfo='percent+label')
         st.plotly_chart(fig3)
