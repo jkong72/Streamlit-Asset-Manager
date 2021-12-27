@@ -56,13 +56,19 @@ def df_app(df_set, start_date, end_date):
         
     with df2:
         st.subheader (f'{val_sel} {dich} {num_sel[0]}개 {col_sel}에 대한 데이터')
-        df_summary = df_set.groupby(col_sel).sum().sort_values(val_sel, ascending=con).head(num_sel[0])
-        df_summary['단가'] = df_summary.단가.apply(lambda x: "{:,}".format(x))+' ₩'
-        df_summary['매출'] = df_summary.매출.apply(lambda x: "{:,}".format(x))+' ₩'
-        st.dataframe(df_summary)
+        if df_set.shape[0] == 0:
+            st.warning ('해당 범위에 데이터가 없습니다.')
+        else: 
+            df_summary = df_set.groupby(col_sel).sum().sort_values(val_sel, ascending=con).head(num_sel[0])
+            df_summary['단가'] = df_summary.단가.apply(lambda x: "{:,}".format(x))+' ₩'
+            df_summary['매출'] = df_summary.매출.apply(lambda x: "{:,}".format(x))+' ₩'
+            st.dataframe(df_summary)
 
     st.markdown("""---""")
-    st.subheader ('전체 전표')
-    df_set['단가'] = df_set.단가.apply(lambda x: "{:,}".format(x))+' ₩'
-    df_set['매출'] = df_set.매출.apply(lambda x: "{:,}".format(x))+' ₩'
-    st.dataframe(df_set, width=650)
+    if df_set.shape[0] == 0:
+        st.warning ('해당 범위에 데이터가 없습니다.')
+    else: 
+        st.subheader ('전체 전표')
+        df_set['단가'] = df_set.단가.apply(lambda x: "{:,}".format(x))+' ₩'
+        df_set['매출'] = df_set.매출.apply(lambda x: "{:,}".format(x))+' ₩'
+        st.dataframe(df_set, width=650)
